@@ -24,7 +24,7 @@ The communication between the main board and the other components happens throug
 * You should be able to incrementally develop _smarthomepy_ without an upfront comprehension of all its requirements. DO NOT read ahead, and handle the requirements (i.e., specified in the user stories) one at a time in the provided order. Develop _smarthomepy_ by starting from the first story’s requirement. When a story is IMPLEMENTED, move on to the NEXT one. A story is implemented when you are confident that your program correctly implements the functionality stipulated by the story's requirement. This implies that all your test cases for that story and all the test cases for the previous stories pass. You may need to review your program as you progress toward more advanced requirements.
 * Each time you end a TDD phase, COMMIT.
 * If you need to handle error situations (including situations unspecified by the user stories), throw a ```SmartHomeError```.
-* At the end of the task, PUSH your forked project and fill in the following post-questionnaire: https://forms.gle/EH1wkV3uVT8V9aEr5.
+* At the end of the task, PUSH your forked project and fill in the following post-questionnaire: [https://forms.gle/EH1wkV3uVT8V9aEr5 ](https://docs.google.com/forms/d/e/1FAIpQLSfbO9SHJBmx0hsagQXTqbOOEjafVKd7VALzSwpcjixVblaA5A/viewform?usp=sharing&ouid=104797422950444435975).
 
 ## API Usage
 Take some minutes to understand, in broad terms, how the API works (i.e., see the provided classes). If you do not fully understand the API, do not worry because further details will be given in the user stories (see the _Issues_ session).
