@@ -51,8 +51,8 @@ class SmartRoom:
         return GPIO.input(self.INFRARED_PIN)
 
     def check_enough_light(self) -> bool:
-        # To be implemented
-        pass
+        # Check the photoresistor to determine if there is enough light
+        return GPIO.input(self.PHOTO_PIN)
 
     def manage_light_level(self) -> None:
         # To be implemented
