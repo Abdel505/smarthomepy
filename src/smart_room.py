@@ -1,25 +1,10 @@
-DEPLOYMENT = False  # This variable is to understand whether you are deploying on the actual hardware
-
-import time
-
-try:
-    import adafruit_bmp280
-    import board
-    import RPi.GPIO as GPIO
-    DEPLOYMENT = True
-except:
-    import mock.adafruit_bmp280 as adafruit_bmp280
-    import mock.board as board
-    import mock.GPIO as GPIO
-    import mock.senseair_s8 as senseair_s8
-
-
 class SmartRoom:
     SERVO_PIN = 31  # Servo motor pin
     INFRARED_PIN = 22  # infrared distance sensor pin
     LED_PIN = 37  # led pin
     PHOTO_PIN = 13  # photoresistor pin
     FAN_PIN = 32  # fan pin
+    
 
     def __init__(self):
         # GPIO pin setup
@@ -55,8 +40,13 @@ class SmartRoom:
         return GPIO.input(self.PHOTO_PIN)
 
     def manage_light_level(self) -> None:
-        # To be implemented
-        pass
+        # Turn on the light if the room is occupied and there is enough light
+        if self.check_room_occupancy() and self.check_enough_light():
+            GPIO.output(self.LED_PIN, GPIO.HIGH)
+            self.light_on = True
+        else:
+            GPIO.output(self.LED_PIN, GPIO.LOW)
+            self.light_on = False
 
     def manage_window(self) -> None:
         # To be implemented
