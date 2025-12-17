@@ -1,11 +1,8 @@
 import unittest
 import mock.GPIO as GPIO
-from unittest.mock import patch, PropertyMock
-from unittest.mock import Mock
+from unittest.mock import patch, Mock
 
-from mock.adafruit_bmp280 import Adafruit_BMP280_I2C
 from src.smart_room import SmartRoom
-from mock.senseair_s8 import SenseairS8
 
 
 class TestSmartRoom(unittest.TestCase):
@@ -15,23 +12,22 @@ class TestSmartRoom(unittest.TestCase):
         smart_room = SmartRoom()
         infrared.return_value = True
         result = smart_room.check_room_occupancy()
-        self.assertEqual(result, True)
+        self.assertTrue(result)
 
     @patch.object(GPIO, "input")
     def test_check_enough_light(self, light: Mock):
         smart_room = SmartRoom()
         light.return_value = False
         result = smart_room.check_enough_light()
-        self.assertEqual(result, False)
+        self.assertFalse(result)
 
-    @patch.object(GPIO, "input")
-    @patch.object(GPIO, "input")
     @patch.object(GPIO, "output")
-    def test_manage_light_level(self, lightbulb: Mock, light: Mock, infrared: Mock ):
+    @patch.object(SmartRoom, "check_enough_light")
+    @patch.object(SmartRoom, "check_room_occupancy")
+    def test_manage_light_level(self, infrared: Mock, photo: Mock, led: Mock):
         smart_room = SmartRoom()
         infrared.return_value = True
-        light.return_value = True
-
+        photo.return_value = True
         smart_room.manage_light_level()
-
+        led.assert_called_with(smart_room.LED_PIN, True)
         self.assertTrue(smart_room.light_on)
