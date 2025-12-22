@@ -1,4 +1,6 @@
 import unittest
+from idlelib.autocomplete import TRY_A
+
 import mock.GPIO as GPIO
 from unittest.mock import patch, Mock, PropertyMock
 
@@ -26,14 +28,24 @@ class TestSmartRoom(unittest.TestCase):
     @patch.object(GPIO, "output")
     @patch.object(SmartRoom, "check_enough_light")
     @patch.object(SmartRoom, "check_room_occupancy")
-    def test_manage_light_level_room_occupied(self, mock_infrared: Mock, mock_photoresistor: Mock, led: Mock):
+    def test_manage_light_level_room_occupied_and_no_enough_light(self, mock_infrared: Mock, mock_photoresistor: Mock, led: Mock):
+        smart_room = SmartRoom()
+        mock_infrared.return_value = True
+        mock_photoresistor.return_value = False
+        smart_room.manage_light_level()
+        led.assert_called_with(smart_room.LED_PIN, True)
+        self.assertTrue(smart_room.light_on)
+
+    @patch.object(GPIO, "output")
+    @patch.object(SmartRoom, "check_enough_light")
+    @patch.object(SmartRoom, "check_room_occupancy")
+    def test_manage_light_level_room_occupied_with_enough_light(self, mock_infrared: Mock, mock_photoresistor: Mock, mock_led: Mock):
         smart_room = SmartRoom()
         mock_infrared.return_value = True
         mock_photoresistor.return_value = True
         smart_room.manage_light_level()
-        led.assert_called_with(smart_room.LED_PIN, True)
-        #led.assert_called_with(smart_room.LED_PIN, False)
-        self.assertTrue(smart_room.light_on)
+        mock_led.assert_called_with(smart_room.LED_PIN, False)
+        self.assertFalse(smart_room.light_on)
 
     @patch.object(GPIO, "output")
     @patch.object(SmartRoom, "check_enough_light")
@@ -41,10 +53,11 @@ class TestSmartRoom(unittest.TestCase):
     def test_manage_light_level_room_empty(self, mock_infrared: Mock, mock_photoresistor: Mock, mock_led: Mock):
         smart_room = SmartRoom()
         mock_infrared.return_value = False
-        mock_photoresistor.return_value = True
+        mock_photoresistor.side_effect = True
         smart_room.manage_light_level()
         mock_led.assert_called_with(smart_room.LED_PIN, False)
         self.assertFalse(smart_room.light_on)
+
     """@patch('src.smart_room.adafruit_bmp280.Adafruit_BMP280_I2C')
     def test_manage_window_opens_when_colder(self, mockBmp280Class: Mock):
         # Create two mocks, one for indoor, one for outdoor

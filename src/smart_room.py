@@ -57,9 +57,8 @@ class SmartRoom:
         return GPIO.input(self.PHOTO_PIN)
 
     def manage_light_level(self) -> None:
-        # Turn on the light if the room is occupied and there is enough light
-        room_occupied = self.check_room_occupancy() and ( self.check_enough_light() or not self.check_enough_light())
-        if room_occupied:
+        # Turn on the light if the room is occupied and there is no enough light
+        if self.check_room_occupancy() and not self.check_enough_light():
             self.light_on = True
         else:
             self.light_on = False
