@@ -51,25 +51,29 @@ class SmartRoom:
         # Check the infrared sensor to determine room occupancy
         return GPIO.input(self.INFRARED_PIN)
 
+
     def check_enough_light(self) -> bool:
         # Check the photoresistor to determine if there is enough light
         return GPIO.input(self.PHOTO_PIN)
 
     def manage_light_level(self) -> None:
         # Turn on the light if the room is occupied and there is enough light
-        if self.check_room_occupancy() and self.check_enough_light():
-            GPIO.output(self.LED_PIN, True)
-            self.light_on = True
-        elif self.check_room_occupancy() and not self.check_enough_light():
-            GPIO.output(self.LED_PIN, True)
+        room_occupied = self.check_room_occupancy() and ( self.check_enough_light() or not self.check_enough_light())
+        if room_occupied:
             self.light_on = True
         else:
-            GPIO.output(self.LED_PIN, False)
             self.light_on = False
+        GPIO.output(self.LED_PIN, self.light_on)
 
     def manage_window(self) -> None:
         # To be implemented
-        pass
+        if 18 <= self.bmp280_indor.temperature  <= 30 and 18 <= self.bmp280_outdoor.temperature <= 30 :
+            if self.bmp280_indor.temperature < self.bmp280_outdoor.temperature - 2:
+                self.window_open = True
+            elif self.bmp280_indor.temperature > self.bmp280_outdoor.temperature + 2:
+                self.window_open = False
+        else:
+            self.window_open = False
 
     def monitor_air_quality(self) -> None:
         # To be implemented
