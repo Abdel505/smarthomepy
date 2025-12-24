@@ -1,3 +1,4 @@
+from mock.adafruit_bmp280 import Adafruit_BMP280_I2C
 
 DEPLOYMENT = False # This variable is to understand whether you are deploying on the actual hardware
 
@@ -65,15 +66,23 @@ class SmartRoom:
         GPIO.output(self.LED_PIN, self.light_on)
 
     def manage_window(self) -> None:
-        # To be implemented
-        if 18 <= self.bmp280_indor.temperature  <= 30 and 18 <= self.bmp280_outdoor.temperature <= 30 :
-            if self.bmp280_indor.temperature < self.bmp280_outdoor.temperature - 2:
+        indor_temp = self.bmp280_indor.temperature
+        outdoor_temp = self.bmp280_outdoor.temperature
+        temp_range = (18 <= indor_temp <= 30) and (18 <= outdoor_temp <= 30)
+
+        if temp_range:
+            if indor_temp < outdoor_temp - 2:
                 self.window_open = True
-            elif self.bmp280_indor.temperature > self.bmp280_outdoor.temperature + 2:
+                self.change_servo_angle(12)
+            elif indor_temp > outdoor_temp + 2:
                 self.window_open = False
+                self.change_servo_angle(2)
+            else:
+                self.window_open = False
+                self.change_servo_angle(2)
+
         else:
             self.window_open = False
-
     def monitor_air_quality(self) -> None:
         # To be implemented
         pass

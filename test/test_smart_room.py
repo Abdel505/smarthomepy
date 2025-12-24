@@ -58,24 +58,18 @@ class TestSmartRoom(unittest.TestCase):
         mock_led.assert_called_with(smart_room.LED_PIN, False)
         self.assertFalse(smart_room.light_on)
 
-    """@patch('src.smart_room.adafruit_bmp280.Adafruit_BMP280_I2C')
-    def test_manage_window_opens_when_colder(self, mockBmp280Class: Mock):
-        # Create two mocks, one for indoor, one for outdoor
-        mock_indoor_sensor = Mock()
-        mock_outdoor_sensor = Mock()
 
-        # Set the side_effect to return our mocks when the class is instantiated
-        MockBmp280Class.side_effect = [mock_indoor_sensor, mock_outdoor_sensor]
-
-        # Configure the temperature for each sensor mock
-        type(mock_indoor_sensor).temperature = PropertyMock(return_value=20)  # Indoor is 20
-        type(mock_outdoor_sensor).temperature = PropertyMock(return_value=23)  # Outdoor is 23
-
-        # Run the code
+    @patch.object(SmartRoom, "change_servo_angle")
+    @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
+    def test_window_management(self, mock_temp: Mock, mock_servo: Mock):
         smart_room = SmartRoom()
+        mock_temp.side_effect = [30, 26]
+        mock_servo.return_value = 2
         smart_room.manage_window()
+        self.assertFalse(smart_room.window_open)
+        mock_servo.assert_called_with(2)
 
-        # Assert that the window was opened
-        self.assertTrue(smart_room.window_open)"""
+
+
 
 
