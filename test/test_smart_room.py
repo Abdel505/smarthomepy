@@ -61,15 +61,36 @@ class TestSmartRoom(unittest.TestCase):
 
     @patch.object(SmartRoom, "change_servo_angle")
     @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
-    def test_window_management(self, mock_temp: Mock, mock_servo: Mock):
+    def test_window_management_Open_window(self, mock_temp: Mock, mock_servo: Mock):
+        smart_room = SmartRoom()
+        mock_temp.side_effect = [20, 26]
+        mock_servo.return_value = 12
+        smart_room.manage_window()
+        self.assertTrue(smart_room.window_open)
+        self.assertEqual(mock_temp.call_count, 2)
+        mock_servo.assert_called_once_with(12)
+
+
+    @patch.object(SmartRoom, "change_servo_angle")
+    @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
+    def test_window_management_Close_window(self, mock_temp: Mock, mock_servo: Mock):
         smart_room = SmartRoom()
         mock_temp.side_effect = [30, 26]
         mock_servo.return_value = 2
         smart_room.manage_window()
         self.assertFalse(smart_room.window_open)
         mock_servo.assert_called_with(2)
+        self.assertEqual(mock_temp.call_count, 2)
 
-
-
-
+    @patch.object(SmartRoom, "change_servo_angle")
+    @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
+    def test_window_management_Neutral_temperatures(self, mock_temp: Mock, mock_servo: Mock):
+        smart_room = SmartRoom()
+        smart_room.window_open = True
+        mock_temp.side_effect = [20, 22]
+        #mock_servo.return_value = 12
+        smart_room.manage_window()
+        self.assertTrue(smart_room.window_open)
+        self.assertEqual(mock_temp.call_count, 2)
+        mock_servo.assert_not_called()
 

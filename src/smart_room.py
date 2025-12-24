@@ -77,12 +77,9 @@ class SmartRoom:
             elif indor_temp > outdoor_temp + 2:
                 self.window_open = False
                 self.change_servo_angle(2)
-            else:
-                self.window_open = False
-                self.change_servo_angle(2)
-
         else:
             self.window_open = False
+
     def monitor_air_quality(self) -> None:
         # To be implemented
         pass
