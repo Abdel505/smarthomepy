@@ -2,6 +2,7 @@ import unittest
 from idlelib.autocomplete import TRY_A
 
 import mock.GPIO as GPIO
+from mock.senseair_s8 import SenseairS8
 from unittest.mock import patch, Mock, PropertyMock
 
 from mock.adafruit_bmp280 import Adafruit_BMP280_I2C
@@ -93,4 +94,14 @@ class TestSmartRoom(unittest.TestCase):
         self.assertTrue(smart_room.window_open)
         self.assertEqual(mock_temp.call_count, 2)
         mock_servo.assert_not_called()
+
+    @patch.object(GPIO, "output")
+    @patch.object(SenseairS8, "co2")
+    def test_monitor_air_quality(self, mock_air_sensor: Mock, mock_switch: Mock):
+        smart_room = SmartRoom()
+        smart_room.fan_on = True
+        mock_air_sensor.return_value = 600
+        smart_room.monitor_air_quality()
+        self.assertTrue(smart_room.fan_on)
+        mock_switch.assert_called_with(smart_room.FAN_PIN, True)
 

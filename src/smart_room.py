@@ -1,4 +1,5 @@
 from mock.adafruit_bmp280 import Adafruit_BMP280_I2C
+from mock.senseair_s8 import SenseairS8
 
 DEPLOYMENT = False # This variable is to understand whether you are deploying on the actual hardware
 
@@ -69,7 +70,6 @@ class SmartRoom:
         indor_temp = self.bmp280_indor.temperature
         outdoor_temp = self.bmp280_outdoor.temperature
         temp_range = (18 <= indor_temp <= 30) and (18 <= outdoor_temp <= 30)
-
         if temp_range:
             if indor_temp < outdoor_temp - 2:
                 self.window_open = True
@@ -81,8 +81,13 @@ class SmartRoom:
             self.window_open = False
 
     def monitor_air_quality(self) -> None:
-        # To be implemented
-        pass
+        co2_level = self.sensair_s8.co2()
+        # The fan stays in its current state when the CO2 is between 500 and 800
+        if  co2_level >= 800:
+            self.fan_on = True
+        elif co2_level < 500:
+            self.fan_on = False
+        GPIO.output(self.FAN_PIN, self.fan_on)
 
     def change_servo_angle(self, duty_cycle):
         """
